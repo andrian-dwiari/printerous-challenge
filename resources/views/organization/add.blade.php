@@ -9,23 +9,23 @@
         <form id="form-organisasi" action="{{ route('organisasi.simpan_tambah_organisasi') }}" enctype="multipart/form-data">
           <div class="form-group">
             <label for="NamaOrganisasi">Nama Organisasi</label>
-            <input type="text" class="form-control" name="nama_organisasi" id="nama-organisasi" placeholder="Masukan Nama Organisasi">
+            <input type="text" class="form-control" name="tambah_nama_organisasi" id="tambah-nama-organisasi" placeholder="Masukan Nama Organisasi">
           </div>
           <div class="form-group">
             <label for="NoTeleponOrganisasi">No Telepon Organisasi</label>
-            <input type="text" class="form-control" name="no_telepon" id="no-telepon" placeholder="Masukan No Telepon Organisasi">
+            <input type="text" class="form-control" name="tambah_no_telepon_organisasi" id="tambah-no-telepon-organisasi" placeholder="Masukan No Telepon Organisasi">
           </div>
           <div class="form-group">
             <label for="EmailOrganisasi">Email Organisasi</label>
-            <input type="text" class="form-control" name="email" id="email" placeholder="Masukan Email Organisasi">
+            <input type="text" class="form-control" name="tambah_email_organisasi" id="tambah-email-organisasi" placeholder="Masukan Email Organisasi">
           </div>
           <div class="form-group">
             <label for="WebsiteOrganisasi">Website Organisasi</label>
-            <input type="text" class="form-control" name="website" id="website" placeholder="Masukan Website Organisasi">
+            <input type="text" class="form-control" name="tambah_website_organisasi" id="tambah-website-organisasi" placeholder="Masukan Website Organisasi">
           </div>
           <div class="form-group">
             <label for="LogoOrganisasi">Logo Organisasi</label>
-            <input type="file" class="form-control" name="logo" id="logo">
+            <input type="file" class="form-control" name="tambah_logo_organisasi" id="tambah-logo-organisasi">
           </div>
         </form>
 
@@ -54,8 +54,8 @@
         <br>
 
         <br>
-        <a href="{{ route('organisasi') }}"><button class="btn btn-primary">Kembali</button></a>
-        <button class="btn btn-info btn-simpan">Simpan</button>
+        <button class="btn btn-primary btn-kembali-organisasi" data-action="{{ route('organisasi.batal_tambah_organisasi') }}">Kembali</button>
+        <button class="btn btn-info btn-simpan-organisasi">Simpan</button>
         <input type="hidden" id="redirect-success" value="{{ route('organisasi') }}">
     </div>
 
@@ -120,7 +120,7 @@
                 <input type="text" class="form-control" name="edit_pic_no_telepon" id="edit-pic-no-telepon">
               </div>
               <div class="form-group">
-                <label class="col-form-label">Avatar: <font color="red"><i>*kosongkan jika tidak ingin mengubah avatar</i><font></label>
+                <label class="col-form-label">Avatar: <font color="red"><i>*kosongkan jika tidak ingin mengubah avatar</i></font></label>
                 <input type="file" class="form-control" name="edit_pic_avatar" id="edit-pic-avatar">
               </div>
             </form>

@@ -18,7 +18,33 @@ class OrganizationController extends Controller
             return redirect('/');
         }
         else {
-        	$data = DB::table('organization')->get();
+        	$organization = Organization::all();
+
+        	$arrOrganization = [];
+        	foreach ($organization as $key => $value) {
+
+        		$person = Person::where('organization_id', $value['id'])->get();
+
+        		$arrPic = [];
+        		foreach ($person as $k => $v) {
+        			$arrPic[] = $v['name'];
+        		}
+        		unset($person);
+
+        		$arr_organization[] = (object) [
+        			'id' => $value['id'],
+        			'name' => $value['name'],
+        			'email' => $value['email'],
+        			'phone' => $value['phone'],
+        			'website' => $value['website'],
+        			'logo' => url('/'.$value['logo']),
+        			'pic' => implode(' | ', $arrPic)
+        		];
+        	}
+        	unset($organization);
+
+			$data = (object) $arr_organization;
+
             return view('organization/index')->with('username', Auth::user()->name)->with('organization', $data);
         }
     }
@@ -50,7 +76,7 @@ class OrganizationController extends Controller
         	if ( $request->hasFile('image') ) {
         		if ( $request->file('image')->getMimeType() == 'image/jpeg' || $request->file('image')->getMimeType() == 'image/jpg' || $request->file('image')->getMimeType() == 'image/png' ) {
 
-					$filename = $this->storeImage($request->file('image'),'avatar','thumbnail');
+					$filename = $this->storeImage($request->file('image'),'avatar');
 
 					try {
 
@@ -92,32 +118,6 @@ class OrganizationController extends Controller
         }
     }
 
-    public function hapus_pic_organisasi(Request $request) {
-    	if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
-
-        $id = $request->input('id');
-
-        try {
-			$person = Person::find($id);
-
-			$tmp_filename = $person->avatar;
-			
-			$person->delete();
-
-			Storage::delete(Str::replaceFirst('storage/','public/', $tmp_filename));
-
-	        return response()->json([
-                'success' => true,
-                'message' => 'Hapus Data Berhasil!'
-            ], 200);
-        } catch (Exception $e) {
-        	return response()->json([
-                'success' => false,
-                'message' => 'Hapus Data Gagal!'
-            ], 400);
-        }
-    }
-
     public function edit_pic_organisasi(Request $request) {
     	if ( Auth::guest() ) {
             return redirect('/');
@@ -140,7 +140,7 @@ class OrganizationController extends Controller
         	if ( $request->hasFile('image') ) {
         		if ( $request->file('image')->getMimeType() == 'image/jpeg' || $request->file('image')->getMimeType() == 'image/jpg' || $request->file('image')->getMimeType() == 'image/png' ) {
 
-					$filename = $this->storeImage($request->file('image'),'avatar','thumbnail');
+					$filename = $this->storeImage($request->file('image'),'avatar');
 					$person->avatar = $filename;
 
 					$ubahAvatar = true;
@@ -175,19 +175,128 @@ class OrganizationController extends Controller
         }
     }
 
-    public function storeImage($value,$attribute_name,$type_image) {
-        $attribute_name = $attribute_name;
-        // destination path relative to the disk above
-        $destination_path = "public/images/avatar";
+    public function hapus_pic_organisasi(Request $request) {
+    	if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
 
-        // if the image was erased
-        if ($value==null) {
-            // delete the image from disk
-            Storage::delete($this->{$attribute_name});
+        $id = $request->input('id');
 
-            // set null in the database column
-            $this->attributes[$attribute_name] = null;
+        try {
+			$person = Person::find($id);
+
+			$tmp_filename = $person->avatar;
+			
+			$person->delete();
+
+			Storage::delete(Str::replaceFirst('storage/','public/', $tmp_filename));
+
+	        return response()->json([
+                'success' => true,
+                'message' => 'Hapus Data Berhasil!'
+            ], 200);
+        } catch (Exception $e) {
+        	return response()->json([
+                'success' => false,
+                'message' => 'Hapus Data Gagal!'
+            ], 400);
         }
+    }
+
+    public function batal_tambah_organisasi(Request $request) {
+    	if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
+
+        $id = $request->input('id');
+
+        try {
+			$person = Person::where('organization_id', $id)->get();
+
+			$tmp_list_avatar_pic = [];
+			foreach ($person as $key => $value) {
+				$tmp_list_avatar_pic[] = Str::replaceFirst('storage/','public/', $value->avatar);
+			}
+			unset($person);
+
+			Person::where('organization_id', $id)->delete();
+
+			Storage::delete($tmp_list_avatar_pic);
+
+	        return response()->json([
+                'success' => true,
+                'message' => 'Hapus Data Berhasil!'
+            ], 200);
+        } catch (Exception $e) {
+        	return response()->json([
+                'success' => false,
+                'message' => 'Hapus Data Gagal!'
+            ], 400);
+        }
+    }
+
+    public function simpan_tambah_organisasi(Request $request) {
+    	if ( Auth::guest() ) {
+            return redirect('/');
+        }
+        else {
+        	if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
+
+        	$tmp_id_organization = rand(10,10000);
+        	if ( $request->input('organisasi_id_tmp') != '' ) $tmp_id_organization = $request->input('organisasi_id_tmp');
+
+        	$tmp_id_organization = $request->input('organisasi_id_tmp');
+        	$name = $request->input('name');
+        	$email = $request->input('email');
+        	$phone = $request->input('phone');
+        	$website = $request->input('website');
+
+        	if ( $request->hasFile('image') ) {
+        		if ( $request->file('image')->getMimeType() == 'image/jpeg' || $request->file('image')->getMimeType() == 'image/jpg' || $request->file('image')->getMimeType() == 'image/png' ) {
+
+					$filename = $this->storeImage($request->file('image'),'logo');
+
+					try {
+
+						$saveImage = new Organization();
+						$saveImage->name = $name;
+						$saveImage->email = $email;
+						$saveImage->phone = $phone;
+						$saveImage->website = $website;
+						$saveImage->logo = $filename;
+						$saveImage->save();
+
+						Person::where('organization_id', $tmp_id_organization)->update(['organization_id' => $saveImage->id]);
+
+						return response()->json([
+			                'success' => true,
+			                'message' => "Simpan Data Berhasil! \n Silahkan request hak akses ke administrator untuk mengedit dan menghapus data organisasi yang baru ditambahkan",
+			                'response' => $saveImage,
+			                'public_url' => url('/'.$saveImage->logo)
+			            ], 200);
+
+					} catch (Exception $e) {
+						return response()->json([
+			                'success' => false,
+			                'message' => 'Simpan Data Gagal!'
+			            ], 400);
+					}
+        		}
+        		else {
+        			return response()->json([
+		                'success' => false,
+		                'message' => 'Format Logo harus (jpg/jpeg/png)!'
+		            ], 400);
+        		}
+        	}
+        	else {
+        		return response()->json([
+	                'success' => false,
+	                'message' => 'Logo harus diisi!'
+	            ], 400);
+        	}
+        }
+    }
+
+    public function storeImage($value,$type_image) {
+        // destination path relative to the disk above
+        $destination_path = "public/images/".$type_image;
 
         // 0. Make the image
         $image = Image::make($value)->fit(100)->encode('jpg', 90);
@@ -198,8 +307,8 @@ class OrganizationController extends Controller
         // 2. Store the image on disk.
         Storage::put($destination_path.'/'.$filename, $image->stream());
 
-        // 3. Delete the previous image, if there was one.
-        Storage::delete(Str::replaceFirst('storage/','public/', $attribute_name));
+        // // 3. Delete the previous image, if there was one.
+        // Storage::delete(Str::replaceFirst('storage/','public/', $attribute_name));
 
         // 4. Save the public path to the database
         // but first, remove "public/" from the path, since we're pointing to it
@@ -208,5 +317,93 @@ class OrganizationController extends Controller
         $public_destination_path = Str::replaceFirst('public/', 'storage/', $destination_path);
         
         return $public_destination_path.'/'.$filename;
+    }
+
+    public function lihat_organisasi(Request $request) {
+        if ( Auth::guest() ) {
+            return redirect('/');
+        }
+        else {
+        	$id = $request->input('id');
+
+        	$organization = Organization::find($id);
+
+        	$person = Person::where('organization_id', $organization['id'])->get();
+
+    		$arrPic = [];
+    		foreach ($person as $k => $v) {
+    			$arrPic[] = (object) [
+    				'id' => $v['id'],
+    				'name' => $v['name'],
+    				'email' => $v['email'],
+    				'phone' => $v['phone'],
+    				'avatar' => url('/'.$v['avatar'])
+    			];
+    		}
+    		unset($person);
+
+    		$arr_organization = (object) [
+    			'id' => $organization['id'],
+    			'name' => $organization['name'],
+    			'email' => $organization['email'],
+    			'phone' => $organization['phone'],
+    			'website' => $organization['website'],
+    			'logo' => url('/'.$organization['logo']),
+    			'pic' => $arrPic
+    		];
+
+        	unset($organization);
+
+			$data = (object) $arr_organization;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lihat Data Berhasil!',
+                'data' => $data
+            ], 200);
+        }
+    }
+
+    public function hapus_organisasi(Request $request) {
+    	if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
+
+        $id = $request->input('id');
+
+        try {
+			$organization = Organization::where('id', $id)->get();
+
+			$tmp_list_logo = [];
+			foreach ($organization as $key => $value) {
+				$tmp_list_logo[] = Str::replaceFirst('storage/','public/', $value->logo);
+			}
+			unset($organization);
+
+			Organization::where('id', $id)->delete();
+
+			Storage::delete($tmp_list_logo);
+
+
+			$person = Person::where('organization_id', $id)->get();
+
+			$tmp_list_avatar_pic = [];
+			foreach ($person as $key => $value) {
+				$tmp_list_avatar_pic[] = Str::replaceFirst('storage/','public/', $value->avatar);
+			}
+			unset($person);
+
+			Person::where('organization_id', $id)->delete();
+
+			Storage::delete($tmp_list_avatar_pic);
+
+	        return response()->json([
+                'success' => true,
+                'message' => 'Hapus Data Berhasil!'
+            ], 200);
+        } catch (Exception $e) {
+        	return response()->json([
+                'success' => false,
+                'message' => 'Hapus Data Gagal!'
+            ], 400);
+        }
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Organization extends Model
 {
-    use HasFactory;
+    protected $table = 'organization';
+    protected $fillable = ['name','email','phone','website','logo'];
 }

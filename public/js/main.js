@@ -199,154 +199,231 @@ jQuery(document).ready(function() {
 	if ( jQuery(".organisasi").length > 0 ) {
 		jQuery('#dataTable-organisasi').DataTable();
 
-		// jQuery(".btn-ubah").click( function() {
-		// 	var id = jQuery(this).data('id');
-		// 	var name = jQuery(this).data('name');
-		// 	jQuery('#modal_edit').find('#nama-kategori').val(name);
-		// 	jQuery('#modal_edit').find('.btn-proses-ubah').data('id',id);
-		// 	jQuery('#modal_edit').modal('show');
-		// });
+        function reset_modal_form_view_organization() {
+            jQuery('#view-organisasi-nama').val('');
+            jQuery('#view-organisasi-email').val('');
+            jQuery('#view-organisasi-no-telepon').val('');
+            jQuery('#view-organisasi-website').val('');
+            jQuery('#view-organisasi-logo').attr('src','');
 
-		// jQuery(".btn-proses-ubah").click( function() {
-  //           var id = jQuery(this).data('id');
-  //           var name = jQuery(this).parents('#modal_edit').find('#nama-kategori').val();
-  //           var token = jQuery("meta[name='csrf-token']").attr("content");
+            jQuery('#dataTable-list-pic tbody').find('tr').remove();
+        }
 
-  //           if (name.length == "") {
+        function reset_modal_form_edit_organization() {
+            jQuery('#edit-organisasi-nama').val('');
+            jQuery('#edit-organisasi-email').val('');
+            jQuery('#edit-organisasi-no-telepon').val('');
+            jQuery('#edit-organisasi-website').val('');
+            jQuery('#edit-organisasi-logo').val('');
 
-  //               Swal.fire({
-  //                   type: 'warning',
-  //                   title: 'Oops...',
-  //                   text: 'Nama Kategori Wajib Diisi !'
-  //               });
+            jQuery('#dataTable-list-pic tbody').find('tr').remove();
 
-  //           } else {
+            jQuery('#modal_edit .modal-footer .btn-proses-edit-organisasi').prop('disabled',false);
+            jQuery('#modal_edit .modal-footer .btn-batal').prop('disabled',false);
+        }
 
+        jQuery(".modal-content .modal-header button.close, .modal-content .modal-footer button.btn-batal").click( function() {
+            reset_modal_form_view_organization();
+            reset_modal_form_edit_organization();
+        });
 
-	 //            //ajax
-	 //            jQuery.ajax({
+        jQuery(".btn-lihat-organisasi").click( function() {
+            var id = jQuery(this).data('id');
+            var token = jQuery("meta[name='csrf-token']").attr("content");
 
-	 //                url: jQuery(this).data('action'),
-	 //                type: "POST",
-	 //                cache: false,
-	 //                data: {
-	 //                    "id": id,
-	 //                    "name": name,
-	 //                    "_token": token
-	 //                },
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "id": id,
+                    "_token": token
+                },
+                success:function(response){
+                    jQuery('#modal_lihat').find('#view-organisasi-nama').val(response.data.name);
+                    jQuery('#modal_lihat').find('#view-organisasi-email').val(response.data.email);
+                    jQuery('#modal_lihat').find('#view-organisasi-no-telepon').val(response.data.phone);
+                    jQuery('#modal_lihat').find('#view-organisasi-website').val(response.data.website);
+                    jQuery('#modal_lihat').find('#view-organisasi-logo').attr('src',response.data.logo);
+                    jQuery('#modal_lihat').find('#view-organisasi-logo').attr('alt',response.data.name);
+                    jQuery('#modal_lihat').find('#view-organisasi-logo').attr('title',response.data.name);
 
-	 //                success:function(response){
+                    jQuery.each(response.data.pic,function(index,value){
+                        var setTr = '';
+                        setTr = ''+
+                        '<tr class="tr-'+value.id+'">'+
+                            '<td class="td-name">'+value.name+'</td>'+
+                            '<td class="td-email">'+value.email+'</td>'+
+                            '<td class="td-phone">'+value.phone+'</td>'+
+                            '<td class="td-avatar"><img src='+value.avatar+' alt='+value.name+' title='+value.name+' width="75px" height="75px"></td>'+
+                        '</tr>';
 
-	 //                    if (response.success) {
+                        jQuery('table#dataTable-list-pic tbody').append(setTr);
+                    });
 
-	 //                        Swal.fire({
-	 //                            type: 'success',
-	 //                            title: 'Berhasil!',
-	 //                            text: 'Data berhasil diubah',
-	 //                            timer: 2000,
-	 //                            showCancelButton: false,
-	 //                            showConfirmButton: false
-	 //                        })
-	 //                            .then (function() {
-	 //                                location.reload();
-	 //                            });
+                    jQuery('#modal_lihat').modal('show');
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            });
+        });
 
-	 //                    } else {
+        jQuery(document).on("click", ".btn-hapus-organisasi", function (event) {
+            var id = jQuery(this).data('id');
+            var name = jQuery(this).data('name');
+            jQuery('#modal_hapus').find('.modal-body p').text('Anda yakin akan menghapus organisasi '+name+'?');
+            jQuery('#modal_hapus').find('.btn-proses-hapus-organisasi').data('id',id);
+            jQuery('#modal_hapus').modal('show');
+        });
 
-	 //                        Swal.fire({
-	 //                            type: 'error',
-	 //                            title: 'Gagal!',
-	 //                            text: 'Data gagal diubah, silahkan coba lagi!'
-	 //                        });
+        jQuery(".btn-proses-hapus-organisasi").click( function() {
+            var id = jQuery(this).data('id');
+            var token = jQuery("meta[name='csrf-token']").attr("content");
 
-	 //                    }
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "id": id,
+                    "_token": token
+                },
+                success:function(response){
 
-	 //                },
+                    if (response.success) {
 
-	 //                error:function(response){
-	 //                    Swal.fire({
-	 //                        type: 'error',
-	 //                        title: 'Opps!',
-	 //                        text: 'server error!'
-	 //                    });
-	 //                }
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Berhasil!',
+                            text: response.message
+                        });
 
-	 //            })
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            showCancelButton: false,
+                            showConfirmButton: true
+                        })
+                            .then (function() {
+                                location.reload();
+                            });
 
-  //           }
-  //       });
+                    } else {
 
-		// jQuery(".btn-lihat").click( function() {
-		// 	var id = jQuery(this).data('id');
-		// 	var name = jQuery(this).data('name');
-		// 	jQuery('#modal_lihat').find('#lihat-nama-kategori').val(name);
-		// 	jQuery('#modal_lihat').modal('show');
-		// });
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Gagal!',
+                            text: response.message
+                        });
 
-		// jQuery(".btn-hapus").click( function() {
-		// 	var id = jQuery(this).data('id');
-		// 	var name = jQuery(this).data('name');
-		// 	jQuery('#modal_hapus').find('.modal-body p').text('Anda yakin akan menghapus kategori '+name+'?');
-		// 	jQuery('#modal_hapus').find('.btn-proses-hapus').data('id',id);
-		// 	jQuery('#modal_hapus').modal('show');
-		// });
+                    }
 
-		// jQuery(".btn-proses-hapus").click( function() {
-  //           var id = jQuery(this).data('id');
-  //           var token = jQuery("meta[name='csrf-token']").attr("content");
+                    jQuery('#modal_hapus').modal('hide');
 
-  //           //ajax
-  //           jQuery.ajax({
-
-  //               url: jQuery(this).data('action'),
-  //               type: "POST",
-  //               cache: false,
-  //               data: {
-  //                   "id": id,
-  //                   "_token": token
-  //               },
-
-  //               success:function(response){
-
-  //                   if (response.success) {
-
-  //                       Swal.fire({
-  //                           type: 'success',
-  //                           title: 'Berhasil!',
-  //                           text: 'Data berhasil dihapus',
-  //                           timer: 2000,
-  //                           showCancelButton: false,
-  //                           showConfirmButton: false
-  //                       })
-  //                           .then (function() {
-  //                               location.reload();
-  //                           });
-
-  //                   } else {
-
-  //                       Swal.fire({
-  //                           type: 'error',
-  //                           title: 'Gagal!',
-  //                           text: 'Data gagal dihapus, silahkan coba lagi!'
-  //                       });
-
-  //                   }
-
-  //               },
-
-  //               error:function(response){
-  //                   Swal.fire({
-  //                       type: 'error',
-  //                       title: 'Opps!',
-  //                       text: 'server error!'
-  //                   });
-  //               }
-
-  //           })
-  //       });
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            })
+        });
 	}
 
 	if ( jQuery(".tambah-organisasi").length > 0 ) {
+        jQuery(".btn-kembali-organisasi").click( function() {
+            var organisasi_id_tmp = jQuery('#id-organisasi-tmp').val();
+            var token = jQuery("meta[name='csrf-token']").attr("content");
+
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "id": organisasi_id_tmp,
+                    "_token": token
+                },
+                success:function(response){
+                    window.location.href = jQuery('#redirect-success').val();
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            })
+        });
+
+        jQuery('.btn-simpan-organisasi').click( function() {
+            var validasi = validasi_organisasi('tambah');
+
+            if ( validasi ) {
+                jQuery.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                jQuery(this).prop('disabled',true);
+                jQuery('.btn-kembali-organisasi').prop('disabled',true);
+
+                var form_data = new FormData();
+
+                var blob = jQuery('#tambah-logo-organisasi')[0].files[0];
+
+                form_data.append('organisasi_id_tmp', jQuery('#id-organisasi-tmp').val());
+                form_data.append('name', jQuery('#tambah-nama-organisasi').val());
+                form_data.append('phone', jQuery('#tambah-no-telepon-organisasi').val());
+                form_data.append('email', jQuery('#tambah-email-organisasi').val());
+                form_data.append('website', jQuery('#tambah-website-organisasi').val());
+                form_data.append('image', blob);
+
+                jQuery.ajax({
+                    type: 'POST',
+                    url: jQuery('#form-organisasi').attr('action'),
+                    dataType: 'json',
+                    data: form_data,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(data){
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Berhasil!',
+                            text: data.message,
+                            showCancelButton: false,
+                            showConfirmButton: true
+                        })
+                            .then (function() {
+                                window.location.href = jQuery('#redirect-success').val();
+                            });
+                    },
+                    error: function(data){
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Opps!',
+                            text: 'server error!'
+                        });
+
+                        jQuery('.btn-simpan-organisasi').prop('disabled',false);
+                        jQuery('.btn-kembali-organisasi').prop('disabled',false);
+                    },
+                },'json');
+            }
+        });
 
 		function reset_modal_form_add_pic() {
 			jQuery('#tambah-pic-nama').val('');
@@ -573,22 +650,21 @@ jQuery(document).ready(function() {
                                 text: data.message
                             });
 
-                            jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('tr.tr-'+id).remove();
-                            jQuery('table#dataTable-tambah-pic tbody').find('.td-name').text(data.response.name);
-                            jQuery('table#dataTable-tambah-pic tbody').find('.td-email').text(data.response.email);
-                            jQuery('table#dataTable-tambah-pic tbody').find('.td-phone').text(data.response.phone);
+                            jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-name').text(data.response.name);
+                            jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-email').text(data.response.email);
+                            jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-phone').text(data.response.phone);
 
                             if ( data.ubah_avatar ) {
-                                jQuery('table#dataTable-tambah-pic tbody').find('.td-avatar img').attr('src',data.public_url);
-                                jQuery('table#dataTable-tambah-pic tbody').find('.td-avatar img').attr('alt',data.response.name);
-                                jQuery('table#dataTable-tambah-pic tbody').find('.td-avatar img').attr('title',data.response.name);
+                                jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-avatar img').attr('src',data.public_url);
+                                jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-avatar img').attr('alt',data.response.name);
+                                jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-avatar img').attr('title',data.response.name);
                             }
 
-                            jQuery('table#dataTable-tambah-pic tbody').find('.td-btn .btn-edit-pic').data('name',data.response.name);
-                            jQuery('table#dataTable-tambah-pic tbody').find('.td-btn .btn-edit-pic').data('email',data.response.email);
-                            jQuery('table#dataTable-tambah-pic tbody').find('.td-btn .btn-edit-pic').data('phone',data.response.phone);
+                            jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-btn .btn-edit-pic').data('name',data.response.name);
+                            jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-btn .btn-edit-pic').data('email',data.response.email);
+                            jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-btn .btn-edit-pic').data('phone',data.response.phone);
 
-                            jQuery('table#dataTable-tambah-pic tbody').find('.td-btn .btn-hapus-pic').data('name',data.response.name);
+                            jQuery('table#dataTable-tambah-pic tbody tr.tr-'+id).find('.td-btn .btn-hapus-pic').data('name',data.response.name);
 
                             reset_modal_form_edit_pic();
 
@@ -631,7 +707,6 @@ jQuery(document).ready(function() {
 
             //ajax
             jQuery.ajax({
-
                 url: jQuery(this).data('action'),
                 type: "POST",
                 cache: false,
@@ -639,7 +714,6 @@ jQuery(document).ready(function() {
                     "id": id,
                     "_token": token
                 },
-
                 success:function(response){
 
                     if (response.success) {
@@ -665,7 +739,6 @@ jQuery(document).ready(function() {
                     jQuery('#modal_hapus').modal('hide');
 
                 },
-
                 error:function(response){
                     Swal.fire({
                         type: 'error',
@@ -673,10 +746,95 @@ jQuery(document).ready(function() {
                         text: 'server error!'
                     });
                 }
-
             })
         });
 	}
+
+    function validasi_organisasi(action) {
+        var nama_organisasi = jQuery("#"+action+"-nama-organisasi").val();
+        var notelp_organisasi = jQuery("#"+action+"-no-telepon-organisasi").val();
+        var email_organisasi = jQuery("#"+action+"-email-organisasi").val();
+        var website_organisasi = jQuery("#"+action+"-website-organisasi").val();
+        var logo_organisasi = jQuery("#"+action+"-logo-organisasi").val();
+
+        if (nama_organisasi.length == "") {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Nama Organisasi Wajib Diisi !'
+            });
+
+            return false;
+
+        } else if(notelp_organisasi.length == "") {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'No Telepon Organisasi Wajib Diisi !'
+            });
+
+            return false;
+
+        } else if(email_organisasi.length == "") {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Email Organisasi Wajib Diisi !'
+            });
+
+            return false;
+
+        } else if(!validateEmail(email_organisasi)) {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Format Email Organisasi Salah !'
+            });
+
+            return false;
+
+        } else if(website_organisasi.length == "") {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Website Organisasi Wajib Diisi !'
+            });
+
+            return false;
+
+        }
+
+        if ( action == 'tambah' ) {
+            if(logo_organisasi.length == "") {
+
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Oops...',
+                    text: 'Logo Organisasi Wajib Diisi !'
+                });
+
+                return false;
+
+            }
+        }
+
+        if ( jQuery('#dataTable-tambah-pic tbody').find('tr').length < 1 ) {
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'PIC Organisasi Wajib Diisi !'
+            });
+
+            return false;
+        }
+
+        return true;
+    }
 
     // validate must number
     jQuery('#no-telepon, #tambah-pic-no-telepon').keypress(function (e) {
