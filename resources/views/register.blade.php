@@ -11,29 +11,41 @@
         <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
     </head>
     <body class="bg-primary">
-        <div id="layoutAuthentication" class="login">
+        <div id="layoutAuthentication" class="register">
             <div id="layoutAuthentication_content">
                 <main>
                     <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-lg-5">
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
+                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Register</h3></div>
                                     <div class="card-body">
-                                        <form action="{{ route('login.check_login') }}">
+                                        <form action="{{ route('register.store') }}">
+                                            <div class="form-group">
+                                                <label class="small mb-1" for="inputNama">Nama</label>
+                                                <input class="form-control py-4" id="inputName" type="text" placeholder="Masukan nama" />
+                                            </div>
                                             <div class="form-group">
                                                 <label class="small mb-1" for="inputEmailAddress">Email</label>
-                                                <input class="form-control py-4" id="inputEmailAddress" type="email" placeholder="Enter email address" />
+                                                <input class="form-control py-4" id="inputEmailAddress" type="email" placeholder="Masukan alamat email" />
                                             </div>
                                             <div class="form-group">
                                                 <label class="small mb-1" for="inputPassword">Password</label>
-                                                <input class="form-control py-4" id="inputPassword" type="password" placeholder="Enter password" />
+                                                <input class="form-control py-4" id="inputPassword" type="password" placeholder="Masukan password" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="small mb-1" for="selectRole">Role</label>
+                                                <select class="form-control" for="selectRole" id="selectRole">
+                                                    <option value="">--- Silahkan Pilih ---</option>
+                                                    <option value="administrator">Administrator</option>
+                                                    <option value="account_manager">Account Manager</option>
+                                                    <option value="member">Member</option>
+                                                </select>
                                             </div>
                                             <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                <a class="small">&nbsp;</a>
-                                                <a class="btn btn-primary btn-login" href="javascript:void(0)">Login</a>
+                                                <a class="small" href="{{ route('login') }}">Kembali ke login</a>
+                                                <a class="btn btn-primary btn-register" href="javascript:void(0)">Register</a>
                                             </div>
-                                            <input type="hidden" id="redirect-login-success" value="{{ route('dashboard') }}#">
                                         </form>
                                     </div>
                                 </div>
@@ -42,6 +54,7 @@
                     </div>
                 </main>
             </div>
+            <br>
             <div id="layoutAuthentication_footer">
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">

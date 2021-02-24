@@ -7,13 +7,13 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Tes Bidang - Soal 1</title>
+        <title>Printerous Challenge</title>
         <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <link href="{{ asset('css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="{{ route('dashboard') }}">Tes Bidang - Soal 1</a>
+            <a class="navbar-brand" href="{{ route('dashboard') }}">Printerous Challenge</a>
             <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
         </nav>
         <div id="layoutSidenav">
@@ -25,17 +25,13 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
-                            <a class="nav-link" href="{{ route('kategori') }}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                                Kategori Produk
+                            <a class="nav-link" href="javascript:void(0)">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+                                User
                             </a>
-                            <a class="nav-link" href="{{ route('produk') }}">
+                            <a class="nav-link" href="{{ route('organisasi') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                                Produk
-                            </a>
-                            <a class="nav-link" href="{{ route('transaksi') }}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Transaksi
+                                Organization
                             </a>
                             <a class="nav-link" href="{!! URL::to('/logout') !!}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-undo"></i></div>
@@ -68,7 +64,6 @@
         <script src="{{ asset('js/dataTables.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
         <script src="{{ asset('js/jquery.cookie.js') }}"></script>
-        <script src="{{ asset('js/numeral.min.js') }}"></script>
         <script src="{{ asset('js/main.js') }}"></script>
     </body>
 </html>
