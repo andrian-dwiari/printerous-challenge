@@ -134,7 +134,7 @@ class OrganizationController extends Controller
         else {
         	if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
 
-        	$id = $request->input('id');
+            $id = $request->input('id');
 
         	$person = Person::find($id);
 
@@ -189,11 +189,11 @@ class OrganizationController extends Controller
 
         $id = $request->input('id');
 
-        try {
-			$person = Person::find($id);
+        $person = Person::find($id);
 
-			$tmp_filename = $person->avatar;
-			
+        $tmp_filename = $person->avatar;
+
+        try {
 			$person->delete();
 
 			Storage::delete(Str::replaceFirst('storage/','public/', $tmp_filename));
@@ -378,6 +378,13 @@ class OrganizationController extends Controller
 
         $id = $request->input('id');
 
+        if ( Auth::user()->role == 'account_manager' ) {
+            $checkRoleOrganization = RoleOrganization::where('user_id',Auth::user()->id)->where('organization_id',$id)->get();
+
+            if ( count($checkRoleOrganization) == 0 ) return redirect('/organisasi');
+            unset($checkRoleOrganization);
+        }
+
         try {
 			$organization = Organization::where('id', $id)->get();
 
@@ -423,7 +430,16 @@ class OrganizationController extends Controller
             return redirect('/');
         }
         else {
+            if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
+
             $id = $request->input('id');
+
+            if ( Auth::user()->role == 'account_manager' ) {
+                $checkRoleOrganization = RoleOrganization::where('user_id',Auth::user()->id)->where('organization_id',$id)->get();
+
+                if ( count($checkRoleOrganization) == 0 ) return redirect('/organisasi');
+                unset($checkRoleOrganization);
+            }
 
             $organization = Organization::find($id);
 
@@ -471,6 +487,13 @@ class OrganizationController extends Controller
             if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
 
             $id = $request->input('id');
+
+            if ( Auth::user()->role == 'account_manager' ) {
+                $checkRoleOrganization = RoleOrganization::where('user_id',Auth::user()->id)->where('organization_id',$id)->get();
+
+                if ( count($checkRoleOrganization) == 0 ) return redirect('/organisasi');
+                unset($checkRoleOrganization);
+            }
 
             $organization = Organization::find($id);
 

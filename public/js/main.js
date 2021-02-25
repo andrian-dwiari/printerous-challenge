@@ -188,7 +188,7 @@ jQuery(document).ready(function() {
                             type: 'success',
                             title: 'Login Berhasil!',
                             text: 'Anda akan di arahkan ke halaman dashboard',
-                            timer: 3000,
+                            timer: 2000,
                             showCancelButton: false,
                             showConfirmButton: false
                         })
@@ -1006,6 +1006,9 @@ jQuery(document).ready(function() {
             jQuery('#view-role-user').val('');
 
             jQuery('#dataTable-list-akses-organisasi tbody').find('tr').remove();
+
+            jQuery('#modal_lihat .to-not-am').addClass('hide');
+            jQuery('#modal_lihat .to-am').removeClass('hide');
         }
 
         function reset_modal_form_edit_user() {
@@ -1044,6 +1047,9 @@ jQuery(document).ready(function() {
                     jQuery('#modal_lihat').find('#view-role-user').val(response.data.role);
 
                     if ( response.data.role == 'account manager' ) {
+                        jQuery('#modal_lihat .to-not-am').addClass('hide');
+                        jQuery('#modal_lihat .to-am').removeClass('hide');
+                        
                         jQuery.each(response.data.akses,function(index,value){
                             var setTr = '';
                             setTr = ''+
@@ -1056,22 +1062,14 @@ jQuery(document).ready(function() {
                         });
                     }
                     else if ( response.data.role == 'administrator' ) {
-                        var setTr = '';
-                        setTr = ''+
-                        '<tr class="tr-'+response.data.role+'">'+
-                            '<td colspan="2" align="center">Semua Akses</td>'+
-                        '</tr>';
-
-                        jQuery('table#dataTable-list-akses-organisasi tbody').append(setTr);
+                        jQuery('#modal_lihat .to-not-am').removeClass('hide');
+                        jQuery('#modal_lihat .to-not-am .not-am-txt').text('Bisa Semua Akses');
+                        jQuery('#modal_lihat .to-am').addClass('hide');
                     }
                     else if ( response.data.role == 'member' ) {
-                        var setTr = '';
-                        setTr = ''+
-                        '<tr class="tr-'+response.data.role+'">'+
-                            '<td colspan="2" align="center">Hanya bisa view organisasi</td>'+
-                        '</tr>';
-
-                        jQuery('table#dataTable-list-akses-organisasi tbody').append(setTr);
+                        jQuery('#modal_lihat .to-not-am').removeClass('hide');
+                        jQuery('#modal_lihat .to-not-am .not-am-txt').text('Hanya Bisa Melihat Organisasi');
+                        jQuery('#modal_lihat .to-am').addClass('hide');
                     }
 
                     jQuery('#modal_lihat').modal('show');
@@ -1203,7 +1201,7 @@ jQuery(document).ready(function() {
                             var setTr = '';
                             setTr = ''+
                             '<tr class="tr-'+response.data.role+'">'+
-                                '<td colspan="2" align="center">Semua Akses</td>'+
+                                '<td colspan="3" align="center">Bisa Semua Akses</td>'+
                             '</tr>';
 
                             jQuery('table#dataTable-tambah-akses-organisasi tbody').append(setTr);
@@ -1212,7 +1210,7 @@ jQuery(document).ready(function() {
                             var setTr = '';
                             setTr = ''+
                             '<tr class="tr-'+response.data.role+'">'+
-                                '<td colspan="2" align="center">Hanya bisa view organisasi</td>'+
+                                '<td colspan="3" align="center">Hanya Bisa Melihat Organisasi</td>'+
                             '</tr>';
 
                             jQuery('table#dataTable-tambah-akses-organisasi tbody').append(setTr);

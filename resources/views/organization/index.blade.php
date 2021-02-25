@@ -5,9 +5,11 @@
     <div class="container-fluid">
         <h1 class="mt-4">organisasi</h1>
         <hr>
+        @if ( Auth::user()->role != 'member' )
         <a href="{{ route('tambah-organisasi') }}"><button class="btn btn-primary">Tambah</button></a>
         <br>
         <br>
+        @endif
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable-organisasi" width="100%" cellspacing="0">
                 <thead>

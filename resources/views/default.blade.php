@@ -12,6 +12,7 @@
         <link href="{{ asset('css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
         <style type="text/css">
             .modal {overflow-y:auto;}
+            .hide {display: none}
         </style>
     </head>
     <body class="sb-nav-fixed">
@@ -55,7 +56,7 @@
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">
                         <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Tes bidang - Soal 1 - @php echo date("Y"); @endphp</div>
+                            <div class="text-muted">Copyright &copy; Andrian Dwiari - Printerous Challenge - @php echo date("Y"); @endphp</div>
                         </div>
                     </div>
                 </footer>

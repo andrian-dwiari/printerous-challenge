@@ -62,18 +62,24 @@
             </form>
             <br>
             <div class="form-group">
-                <label for="EmailUser">List Akses Organisasi</label>
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable-list-akses-organisasi" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                <div class="to-am">
+                  <label for="listAkses">List Akses Organisasi</label>
+                  <div class="table-responsive">
+                      <table class="table table-bordered" id="dataTable-list-akses-organisasi" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="to-not-am hide">
+                  <label for="listAkses">List Akses Organisasi: <b class="not-am-txt">Akses</b></label>
                 </div>
             </div>
             <br>
