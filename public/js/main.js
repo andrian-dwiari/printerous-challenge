@@ -123,7 +123,7 @@ jQuery(document).ready(function() {
             var email = jQuery("#inputEmailAddress").val();
             var password = jQuery("#inputPassword").val();
             var token = jQuery("meta[name='csrf-token']").attr("content");
-            
+
             if(e.which == 13) {
                 var validasi = validasi_login(email,password,token);
 
@@ -322,12 +322,6 @@ jQuery(document).ready(function() {
                 success:function(response){
 
                     if (response.success) {
-
-                        Swal.fire({
-                            type: 'success',
-                            title: 'Berhasil!',
-                            text: response.message
-                        });
 
                         Swal.fire({
                             type: 'success',
@@ -858,6 +852,643 @@ jQuery(document).ready(function() {
         }
 
         return true;
+    }
+
+    if ( jQuery(".user").length > 0 ) {
+        jQuery('#dataTable-user').DataTable();
+
+        function reset_modal_form_view_user() {
+            jQuery('#view-nama-user').val('');
+            jQuery('#view-email-user').val('');
+            jQuery('#view-role-user').val('');
+
+            jQuery('#dataTable-list-akses-organisasi tbody').find('tr').remove();
+        }
+
+        function reset_modal_form_edit_user() {
+            jQuery('#edit-nama-user').val('');
+            jQuery('#edit-email-user').val('');
+            jQuery('#edit-password-user').val('');
+            jQuery('#edit-role-user').val('');
+
+            jQuery('#dataTable-list-akses-organisasi tbody').find('tr').remove();
+
+            jQuery('#modal_edit .modal-footer .btn-proses-edit-user').prop('disabled',false);
+            jQuery('#modal_edit .modal-footer .btn-batal').prop('disabled',false);
+        }
+
+        jQuery(".modal-content .modal-header button.close, .modal-content .modal-footer button.btn-batal").click( function() {
+            reset_modal_form_view_user();
+            reset_modal_form_edit_user();
+        });
+
+        jQuery(".btn-lihat-user").click( function() {
+            var id = jQuery(this).data('id');
+            var token = jQuery("meta[name='csrf-token']").attr("content");
+
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "id": id,
+                    "_token": token
+                },
+                success:function(response){
+                    jQuery('#modal_lihat').find('#view-nama-user').val(response.data.name);
+                    jQuery('#modal_lihat').find('#view-email-user').val(response.data.email);
+                    jQuery('#modal_lihat').find('#view-role-user').val(response.data.role);
+
+                    if ( response.data.role == 'account manager' ) {
+                        jQuery.each(response.data.akses,function(index,value){
+                            var setTr = '';
+                            setTr = ''+
+                            '<tr class="tr-'+value.id+'">'+
+                                '<td class="td-name">'+value.name+'</td>'+
+                                '<td class="td-email">'+value.email+'</td>'+
+                            '</tr>';
+
+                            jQuery('table#dataTable-list-akses-organisasi tbody').append(setTr);
+                        });
+                    }
+                    else if ( response.data.role == 'administrator' ) {
+                        var setTr = '';
+                        setTr = ''+
+                        '<tr class="tr-'+response.data.role+'">'+
+                            '<td colspan="2" align="center">Semua Akses</td>'+
+                        '</tr>';
+
+                        jQuery('table#dataTable-list-akses-organisasi tbody').append(setTr);
+                    }
+                    else if ( response.data.role == 'member' ) {
+                        var setTr = '';
+                        setTr = ''+
+                        '<tr class="tr-'+response.data.role+'">'+
+                            '<td colspan="2" align="center">Hanya bisa view organisasi</td>'+
+                        '</tr>';
+
+                        jQuery('table#dataTable-list-akses-organisasi tbody').append(setTr);
+                    }
+
+                    jQuery('#modal_lihat').modal('show');
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            });
+        });
+
+        jQuery(document).on("click", ".btn-hapus-user", function (event) {
+            var id = jQuery(this).data('id');
+            var name = jQuery(this).data('name');
+            jQuery('#modal_hapus_user').find('.modal-body p').text('Anda yakin akan menghapus user '+name+'?');
+            jQuery('#modal_hapus_user').find('.btn-proses-hapus-user').data('id',id);
+            jQuery('#modal_hapus_user').modal('show');
+        });
+
+        jQuery(".btn-proses-hapus-user").click( function() {
+            var id = jQuery(this).data('id');
+            var token = jQuery("meta[name='csrf-token']").attr("content");
+
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "id": id,
+                    "_token": token
+                },
+                success:function(response){
+
+                    if (response.success) {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            showCancelButton: false,
+                            showConfirmButton: true
+                        })
+                            .then (function() {
+                                location.reload();
+                            });
+
+                    } else {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Gagal!',
+                            text: response.message
+                        });
+
+                    }
+
+                    jQuery('#modal_hapus_user').modal('hide');
+
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            })
+        });
+
+        jQuery(document).on("click", ".btn-ubah-user", function (event) {
+            var id = jQuery(this).data('id');
+            var token = jQuery("meta[name='csrf-token']").attr("content");
+
+            jQuery('.btn-simpan-edit-user').data('id',id);
+
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "id": id,
+                    "_token": token
+                },
+                success:function(response){
+
+                    if (response.success) {
+
+                        jQuery('#id-user-tmp').val(response.data.id);
+
+                        jQuery('#modal_edit').find('#edit-nama-user').val(response.data.name);
+                        jQuery('#modal_edit').find('#edit-email-user').val(response.data.email);
+
+                        jQuery('#edit-role-user').find('option').remove();
+
+                        var selectedOpt = '<option value="'+response.data.role+'">'+response.data.role_name+'</option>';
+                        jQuery('#edit-role-user').append(selectedOpt);
+                        
+                        jQuery.each(response.data.list_role,function(index,value){
+                            if ( value.id != response.data.role ) {
+                                var setOpt = '<option value="'+value.id+'">'+value.name+'</option>';
+                                jQuery('#edit-role-user').append(setOpt);
+                            }
+                        });
+
+
+                        jQuery('table#dataTable-tambah-akses-organisasi tbody tr').remove();
+
+                        if ( response.data.role == 'account_manager' ) {
+                            jQuery.each(response.data.akses,function(index,value){
+                                var setTr = '';
+                                setTr = ''+
+                                '<tr class="tr-'+value.id+'">'+
+                                    '<td class="td-name">'+value.name+'</td>'+
+                                    '<td class="td-email">'+value.email+'</td>'+
+                                    '<td class="td-btn">'+
+                                    '<button title="Hapus" class="btn btn-danger btn-sm btn-hapus-akses-user-organisasi" data-id="'+value.id+'" data-name="'+value.name+'"><i class="fas fa-trash"></i></button>'+
+                                    '</td>'+
+                                '</tr>';
+
+                                jQuery('table#dataTable-tambah-akses-organisasi tbody').append(setTr);
+                            });
+                        }
+                        else if ( response.data.role == 'administrator' ) {
+                            var setTr = '';
+                            setTr = ''+
+                            '<tr class="tr-'+response.data.role+'">'+
+                                '<td colspan="2" align="center">Semua Akses</td>'+
+                            '</tr>';
+
+                            jQuery('table#dataTable-tambah-akses-organisasi tbody').append(setTr);
+                        }
+                        else if ( response.data.role == 'member' ) {
+                            var setTr = '';
+                            setTr = ''+
+                            '<tr class="tr-'+response.data.role+'">'+
+                                '<td colspan="2" align="center">Hanya bisa view organisasi</td>'+
+                            '</tr>';
+
+                            jQuery('table#dataTable-tambah-akses-organisasi tbody').append(setTr);
+                        }
+
+                        jQuery('#modal_edit').modal('show');
+
+                    } else {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Gagal!',
+                            text: response.message
+                        });
+
+                    }
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            });
+        });
+        
+        jQuery('.btn-simpan-edit-user').click( function() {
+            var validasi = validasi_user('edit');
+
+            if ( validasi ) {
+                jQuery.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                jQuery(this).prop('disabled',true);
+                jQuery('.btn-kembali-user').prop('disabled',true);
+
+                var form_data = new FormData();
+
+                form_data.append('id', jQuery(this).data('id'));
+                form_data.append('name', jQuery('#edit-nama-user').val());
+                form_data.append('email', jQuery('#edit-email-user').val());
+                form_data.append('password', jQuery('#edit-password-user').val());
+                form_data.append('role', jQuery('#edit-role-user').val());
+
+                jQuery.ajax({
+                    type: 'POST',
+                    url: jQuery('#modal_edit #form-edit-user').attr('action'),
+                    dataType: 'json',
+                    data: form_data,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(data){
+                        if ( data.success ) {
+                            Swal.fire({
+                                type: 'success',
+                                title: 'Berhasil!',
+                                text: data.message,
+                                showCancelButton: false,
+                                showConfirmButton: true
+                            })
+                                .then (function() {
+                                    location.reload();
+                                });
+                        }
+                        else {
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Oops...',
+                                text: data.message
+                            });
+
+                            jQuery('.btn-simpan-edit-user').prop('disabled',false);
+                            jQuery('#modal_edit .btn-kembali-user').prop('disabled',false);
+                        }
+                    },
+                    error: function(data){
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Opps!',
+                            text: 'server error!'
+                        });
+
+                        jQuery('.btn-simpan-edit-user').prop('disabled',false);
+                        jQuery('#modal_edit .btn-kembali-user').prop('disabled',false);
+                    },
+                },'json');
+            }
+        });
+        
+        detail_user_akses_organisasi();
+    }
+
+    if ( jQuery(".tambah-user").length > 0 ) {
+        jQuery(".btn-kembali-user").click( function() {
+            var user_id_tmp = jQuery('#id-user-tmp').val();
+            var token = jQuery("meta[name='csrf-token']").attr("content");
+
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "user_id_tmp": user_id_tmp,
+                    "_token": token
+                },
+                success:function(response){
+                    window.location.href = jQuery('#redirect-success').val();
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            })
+        });
+
+        jQuery('.btn-simpan-user').click( function() {
+            var validasi = validasi_user('tambah');
+
+            if ( validasi ) {
+                jQuery.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                jQuery(this).prop('disabled',true);
+                jQuery('.btn-kembali-user').prop('disabled',true);
+
+                var form_data = new FormData();
+
+                form_data.append('user_id_tmp', jQuery('#id-user-tmp').val());
+                form_data.append('name', jQuery('#tambah-nama-user').val());
+                form_data.append('email', jQuery('#tambah-email-user').val());
+                form_data.append('password', jQuery('#tambah-password-user').val());
+                form_data.append('role', jQuery('#tambah-role-user').val());
+
+                jQuery.ajax({
+                    type: 'POST',
+                    url: jQuery('#form-user').attr('action'),
+                    dataType: 'json',
+                    data: form_data,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(data){
+                        if ( data.success ) {
+                            Swal.fire({
+                                type: 'success',
+                                title: 'Berhasil!',
+                                text: data.message,
+                                showCancelButton: false,
+                                showConfirmButton: true
+                            })
+                                .then (function() {
+                                    window.location.href = jQuery('#redirect-success').val();
+                                });
+                        }
+                        else {
+                            Swal.fire({
+                                type: 'warning',
+                                title: 'Oops...',
+                                text: data.message
+                            });
+
+                            jQuery('.btn-simpan-user').prop('disabled',false);
+                            jQuery('.btn-kembali-user').prop('disabled',false);
+                        }
+                    },
+                    error: function(data){
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Opps!',
+                            text: 'server error!'
+                        });
+
+                        jQuery('.btn-simpan-user').prop('disabled',false);
+                        jQuery('.btn-kembali-user').prop('disabled',false);
+                    },
+                },'json');
+            }
+        });
+
+        detail_user_akses_organisasi();
+    }
+
+    function validasi_user(action) {
+        var nama_user = jQuery("#"+action+"-nama-user").val();
+        var email_user = jQuery("#"+action+"-email-user").val();
+        var password_user = jQuery("#"+action+"-password-user").val();
+        var role_user = jQuery("#"+action+"-role-user").val();
+
+        if (nama_user.length == "") {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Nama User Wajib Diisi !'
+            });
+
+            return false;
+
+        } else if(email_user.length == "") {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Email User Wajib Diisi !'
+            });
+
+            return false;
+
+        } else if(!validateEmail(email_user)) {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Format Email User Salah !'
+            });
+
+            return false;
+
+        } else if(role_user.length == "") {
+
+            Swal.fire({
+                type: 'warning',
+                title: 'Oops...',
+                text: 'Role User Wajib Diisi !'
+            });
+
+            return false;
+
+        } else if(role_user == "account_manager") {
+
+            if ( jQuery('#dataTable-tambah-akses-organisasi tbody').find('tr').length < 1 ) {
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Oops...',
+                    text: 'User Akses Organisasi Wajib Diisi !'
+                });
+
+                return false;
+            }
+
+        }
+
+        if ( action == 'tambah' ) {
+            if(password_user.length == "") {
+
+                Swal.fire({
+                    type: 'warning',
+                    title: 'Oops...',
+                    text: 'Password User Wajib Diisi !'
+                });
+
+                return false;
+
+            }
+        }
+
+        return true;
+    }
+
+    function detail_user_akses_organisasi() {
+        function reset_modal_form_add_akses_organisasi() {
+            jQuery('#modal_add .modal-footer .btn-proses-tambah-akses-organisasi').prop('disabled',false);
+            jQuery('#modal_add .modal-footer .btn-batal').prop('disabled',false);
+        }
+
+        jQuery(".modal-content .modal-header button.close, .modal-content .modal-footer button.btn-batal").click( function() {
+            reset_modal_form_add_akses_organisasi();
+        });
+
+        jQuery(".btn-tambah-akses-organisasi").click( function() {
+            jQuery('#modal_add').modal('show');
+        });
+
+        jQuery('#modal_add .btn-proses-tambah-akses-organisasi').click( function() {
+            var user_id_tmp = jQuery('#id-user-tmp').val();
+            var akses_organisasi = jQuery('#tambah-akses-organisasi').val();
+            var token = jQuery("meta[name='csrf-token']").attr("content");
+
+            jQuery(this).prop('disabled',true);
+            jQuery('#modal_add .modal-footer .btn-batal').prop('disabled',true);
+
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "user_id_tmp": user_id_tmp,
+                    "akses_organisasi": akses_organisasi,
+                    "_token": token
+                },
+                success:function(response){
+
+                    if (response.success) {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Berhasil!',
+                            text: response.message
+                        });
+
+                        jQuery('#id-user-tmp').val(response.user_id);
+
+                        var setTr = '';
+                        setTr = ''+
+                        '<tr class="tr-'+response.id+'">'+
+                            '<td class="td-name">'+response.data.name+'</td>'+
+                            '<td class="td-email">'+response.data.email+'</td>'+
+                            '<td class="td-btn">'+
+                            '<button title="Hapus" class="btn btn-danger btn-sm btn-hapus-akses-user-organisasi" data-id="'+response.id+'" data-name="'+response.data.name+'"><i class="fas fa-trash"></i></button>'+
+                            '</td>'+
+                        '</tr>';
+
+                        var tmp_str = jQuery.parseHTML(setTr);
+
+                        jQuery.each(tmp_str,function(index,value){
+                            jQuery('table#dataTable-tambah-akses-organisasi tbody').append(value);
+                        });
+
+                        reset_modal_form_add_akses_organisasi();
+
+                        jQuery('#modal_add').modal('hide');
+
+                    } else {
+
+                        Swal.fire({
+                            type: 'warning',
+                            title: 'Oops...',
+                            text: response.message
+                        });
+
+                        reset_modal_form_add_akses_organisasi();
+
+                        jQuery('#modal_add').modal('hide');
+
+                    }
+
+                    jQuery('#modal_hapus').modal('hide');
+
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            })
+        });
+
+        jQuery(document).on("click", ".btn-hapus-akses-user-organisasi", function (event) {
+            var id = jQuery(this).data('id');
+            var name = jQuery(this).data('name');
+            jQuery('#modal_hapus').find('.modal-body p').text('Anda yakin akan menghapus akses organisasi '+name+'?');
+            jQuery('#modal_hapus').find('.btn-proses-hapus-akses-organisasi').data('id',id);
+            jQuery('#modal_hapus').modal('show');
+        });
+
+        jQuery(".btn-proses-hapus-akses-organisasi").click( function() {
+            var id = jQuery(this).data('id');
+            var token = jQuery("meta[name='csrf-token']").attr("content");
+
+            var tmp_remove = jQuery('table#dataTable-tambah-akses-organisasi tbody').find('tr.tr-'+id);
+
+            //ajax
+            jQuery.ajax({
+                url: jQuery(this).data('action'),
+                type: "POST",
+                cache: false,
+                data: {
+                    "id": id,
+                    "_token": token
+                },
+                success:function(response){
+
+                    if (response.success) {
+
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Berhasil!',
+                            text: response.message
+                        });
+
+                        tmp_remove.remove();
+
+                    } else {
+
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Gagal!',
+                            text: response.message
+                        });
+
+                    }
+
+                    jQuery('#modal_hapus').modal('hide');
+
+                },
+                error:function(response){
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
+                }
+            })
+        });
     }
 
     // validate must number

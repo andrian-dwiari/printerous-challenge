@@ -25,7 +25,7 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
-                            <a class="nav-link" href="javascript:void(0)">
+                            <a class="nav-link" href="{{ route('user') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                                 User
                             </a>

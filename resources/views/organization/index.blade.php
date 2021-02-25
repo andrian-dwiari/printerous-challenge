@@ -69,6 +69,7 @@
             </form>
             <br>
             <div class="form-group">
+                <label>List PIC</label>
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable-list-pic" width="100%" cellspacing="0">
                         <thead>

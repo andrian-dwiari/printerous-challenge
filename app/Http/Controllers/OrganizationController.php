@@ -266,7 +266,7 @@ class OrganizationController extends Controller
 
 						return response()->json([
 			                'success' => true,
-			                'message' => "Simpan Data Berhasil! \n Silahkan request hak akses ke administrator untuk mengedit dan menghapus data organisasi yang baru ditambahkan",
+			                'message' => "Simpan Data Berhasil! <br> Silahkan request hak akses ke administrator untuk mengedit dan menghapus data organisasi yang baru ditambahkan",
 			                'response' => $saveImage,
 			                'public_url' => url('/'.$saveImage->logo)
 			            ], 200);
