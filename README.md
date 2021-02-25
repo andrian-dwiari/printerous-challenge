@@ -25,7 +25,9 @@
 	Disini saya menyediakan 4 akun:
 
 	a. administrator
+
 		- email: admin@admin.com
+
 		- password: 123456
 
 		catatan: 
@@ -34,7 +36,9 @@
 			- bisa mengelola semua data organisasi
 
 	b. Account Manager 1
+
 		- email: am1@am1.com
+
 		- password: 123456
 
 		catatan: 
@@ -45,7 +49,9 @@
 			- bisa preview semua organisasi
 
 	c. Account Manager 2
+
 		- email: am2@am2.com
+
 		- password: 123456
 
 		catatan: 
@@ -56,7 +62,9 @@
 			- bisa preview semua organisasi
 
 	d. Member 1
+
 		- email: member@member.com
+		
 		- password: 123456
 
 		catatan: 
