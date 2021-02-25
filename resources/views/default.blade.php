@@ -10,6 +10,9 @@
         <title>Printerous Challenge</title>
         <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <link href="{{ asset('css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+        <style type="text/css">
+            .modal {overflow-y:auto;}
+        </style>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">

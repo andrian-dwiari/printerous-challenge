@@ -41,6 +41,9 @@ Route::post('/tambah-organisasi', [OrganizationController::class, 'simpan_tambah
 Route::post('/batal-tambah-organisasi', [OrganizationController::class, 'batal_tambah_organisasi'])->name('organisasi.batal_tambah_organisasi');
 Route::post('/lihat-organisasi', [OrganizationController::class, 'lihat_organisasi'])->name('organisasi.lihat_organisasi');
 Route::post('/hapus-organisasi', [OrganizationController::class, 'hapus_organisasi'])->name('organisasi.hapus_organisasi');
+Route::post('/ubah-organisasi', [OrganizationController::class, 'ubah_organisasi'])->name('organisasi.ubah_organisasi');
+Route::post('/edit-organisasi', [OrganizationController::class, 'simpan_edit_organisasi'])->name('organisasi.simpan_edit_organisasi');
+
 
 // pic
 Route::post('/tambah-pic-organisasi', [OrganizationController::class, 'simpan_tambah_pic_organisasi'])->name('organisasi.simpan_tambah_pic_organisasi');

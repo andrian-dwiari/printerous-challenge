@@ -417,4 +417,89 @@ class OrganizationController extends Controller
             ], 400);
         }
     }
+
+    public function ubah_organisasi(Request $request) {
+        if ( Auth::guest() ) {
+            return redirect('/');
+        }
+        else {
+            $id = $request->input('id');
+
+            $organization = Organization::find($id);
+
+            $person = Person::where('organization_id', $organization['id'])->get();
+
+            $arrPic = [];
+            foreach ($person as $k => $v) {
+                $arrPic[] = (object) [
+                    'id' => $v['id'],
+                    'name' => $v['name'],
+                    'email' => $v['email'],
+                    'phone' => $v['phone'],
+                    'avatar' => url('/'.$v['avatar'])
+                ];
+            }
+            unset($person);
+
+            $arr_organization = (object) [
+                'id' => $organization['id'],
+                'name' => $organization['name'],
+                'email' => $organization['email'],
+                'phone' => $organization['phone'],
+                'website' => $organization['website'],
+                'logo' => url('/'.$organization['logo']),
+                'pic' => $arrPic
+            ];
+
+            unset($organization);
+
+            $data = (object) $arr_organization;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lihat Data Berhasil!',
+                'data' => $data
+            ], 200);
+        }
+    }
+
+    public function simpan_edit_organisasi(Request $request) {
+        if ( Auth::guest() ) {
+            return redirect('/');
+        }
+        else {
+            if ( Auth::user()->role == 'member' ) return redirect('/organisasi');
+
+            $id = $request->input('id');
+
+            $organization = Organization::find($id);
+
+            $organization->name = $request->input('name');
+            $organization->email = $request->input('email');
+            $organization->phone = $request->input('phone');
+            $organization->website = $request->input('website');
+
+            if ( $request->hasFile('image') ) {
+                Storage::delete(Str::replaceFirst('storage/','public/', $organization->logo));
+                $filename = $this->storeImage($request->file('image'),'logo');
+                $organization->logo = $filename;
+            }
+
+            try {
+                $organization->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Ubah Data Berhasil!',
+                    'response' => $organization,
+                ], 200);
+
+            } catch (Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ubah Data Gagal!'
+                ], 400);
+            }
+        }
+    }
 }
