@@ -37,7 +37,7 @@
                             @endif
                             <a class="nav-link" href="{{ route('organisasi') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                                Organization
+                                Organisasi
                             </a>
                             <a class="nav-link" href="{!! URL::to('/logout') !!}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-undo"></i></div>
