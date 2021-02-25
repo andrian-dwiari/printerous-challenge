@@ -24,8 +24,15 @@
                         <td>{!! $value->pic !!}</td>
                         <td>
                         	<button title="Lihat" class="btn btn-info btn-sm btn-lihat-organisasi" data-id="{!! $value->id !!}" data-action="{{ route('organisasi.lihat_organisasi') }}"><i class="fas fa-eye"></i></button> &nbsp;
-                        	<button title="Ubah" class="btn btn-warning btn-sm btn-ubah-organisasi" data-id="{!! $value->id !!}"><i class="fas fa-edit"></i></button> &nbsp;
-	                        <button title="Hapus" class="btn btn-danger btn-sm btn-hapus-organisasi" data-id="{!! $value->id !!}" data-name="{!! $value->name !!}"><i class="fas fa-trash"></i></button>
+                          @if ( Auth::user()->role == 'administrator' )
+                          	<button title="Ubah" class="btn btn-warning btn-sm btn-ubah-organisasi" data-id="{!! $value->id !!}"><i class="fas fa-edit"></i></button> &nbsp;
+  	                        <button title="Hapus" class="btn btn-danger btn-sm btn-hapus-organisasi" data-id="{!! $value->id !!}" data-name="{!! $value->name !!}"><i class="fas fa-trash"></i></button>
+                          @elseif ( Auth::user()->role == 'account_manager' )
+                            @if ( $value->access )
+                              <button title="Ubah" class="btn btn-warning btn-sm btn-ubah-organisasi" data-id="{!! $value->id !!}"><i class="fas fa-edit"></i></button> &nbsp;
+                              <button title="Hapus" class="btn btn-danger btn-sm btn-hapus-organisasi" data-id="{!! $value->id !!}" data-name="{!! $value->name !!}"><i class="fas fa-trash"></i></button>
+                            @endif
+                          @endif
 	                    </td>
                     </tr>
                     @endforeach

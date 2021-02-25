@@ -10,6 +10,7 @@ Use App\Models\Organization;
 Use App\Models\Person;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+Use App\Models\RoleOrganization;
 
 class OrganizationController extends Controller
 {
@@ -31,6 +32,13 @@ class OrganizationController extends Controller
         		}
         		unset($person);
 
+                $checkRoleOrganization = RoleOrganization::where('user_id',Auth::user()->id)->where('organization_id',$value['id'])->get();
+
+                $access = false;
+                if ( count($checkRoleOrganization) > 0 ) {
+                    $access = true;
+                }
+
         		$arr_organization[] = (object) [
         			'id' => $value['id'],
         			'name' => $value['name'],
@@ -38,7 +46,8 @@ class OrganizationController extends Controller
         			'phone' => $value['phone'],
         			'website' => $value['website'],
         			'logo' => url('/'.$value['logo']),
-        			'pic' => implode(' | ', $arrPic)
+        			'pic' => implode(' | ', $arrPic),
+                    'access' => $access
         		];
         	}
         	unset($organization);
@@ -266,7 +275,7 @@ class OrganizationController extends Controller
 
 						return response()->json([
 			                'success' => true,
-			                'message' => "Simpan Data Berhasil! <br> Silahkan request hak akses ke administrator untuk mengedit dan menghapus data organisasi yang baru ditambahkan",
+			                'message' => "Simpan Data Berhasil! \n Silahkan request hak akses ke administrator untuk mengedit dan menghapus data organisasi yang baru ditambahkan",
 			                'response' => $saveImage,
 			                'public_url' => url('/'.$saveImage->logo)
 			            ], 200);
@@ -394,6 +403,8 @@ class OrganizationController extends Controller
 			Person::where('organization_id', $id)->delete();
 
 			Storage::delete($tmp_list_avatar_pic);
+
+            RoleOrganization::where('organization_id', $id)->delete();
 
 	        return response()->json([
                 'success' => true,

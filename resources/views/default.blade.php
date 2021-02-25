@@ -25,10 +25,12 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
+                            @if ( Auth::user()->role == 'administrator' )
                             <a class="nav-link" href="{{ route('user') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                                 User
                             </a>
+                            @endif
                             <a class="nav-link" href="{{ route('organisasi') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                                 Organization
