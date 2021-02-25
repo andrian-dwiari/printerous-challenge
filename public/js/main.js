@@ -108,11 +108,32 @@ jQuery(document).ready(function() {
 
 	if ( jQuery(".login").length > 0 ) {
 		jQuery(".btn-login").click( function() {
-
             var email = jQuery("#inputEmailAddress").val();
             var password = jQuery("#inputPassword").val();
             var token = jQuery("meta[name='csrf-token']").attr("content");
 
+            var validasi = validasi_login(email,password,token);
+
+            if ( validasi ) {
+                login_process(email,password,token);
+            }
+        });
+
+        jQuery('#inputEmailAddress, #inputPassword').on('keypress',function(e) {
+            var email = jQuery("#inputEmailAddress").val();
+            var password = jQuery("#inputPassword").val();
+            var token = jQuery("meta[name='csrf-token']").attr("content");
+            
+            if(e.which == 13) {
+                var validasi = validasi_login(email,password,token);
+
+                if ( validasi ) {
+                    login_process(email,password,token);
+                }
+            }
+        });
+
+        function validasi_login(email,password,token) {
             if(email.length == "") {
 
                 Swal.fire({
@@ -120,6 +141,8 @@ jQuery(document).ready(function() {
                     title: 'Oops...',
                     text: 'Alamat Email Wajib Diisi !'
                 });
+
+                return false;
 
             } else if(!validateEmail(email)) {
 
@@ -129,6 +152,8 @@ jQuery(document).ready(function() {
                     text: 'Format Email Salah !'
                 });
 
+                return false;
+
             } else if(password.length == "") {
 
                 Swal.fire({
@@ -137,63 +162,62 @@ jQuery(document).ready(function() {
                     text: 'Password Wajib Diisi !'
                 });
 
-            } else {
+                return false;
 
-                jQuery.ajax({
+            }
 
-                    url: jQuery(".login form").attr('action'),
-                    type: "POST",
-                    dataType: "JSON",
-                    cache: false,
-                    data: {
-                        "email": email,
-                        "password": password,
-                        "_token": token
-                    },
+            return true;
+        }
 
-                    success:function(response){
+        function login_process(email,password,token) {
+            jQuery.ajax({
+                url: jQuery(".login form").attr('action'),
+                type: "POST",
+                dataType: "JSON",
+                cache: false,
+                data: {
+                    "email": email,
+                    "password": password,
+                    "_token": token
+                },
+                success:function(response){
 
-                        if (response.success) {
+                    if (response.success) {
 
-                            Swal.fire({
-                                type: 'success',
-                                title: 'Login Berhasil!',
-                                text: 'Anda akan di arahkan ke halaman dashboard',
-                                timer: 3000,
-                                showCancelButton: false,
-                                showConfirmButton: false
-                            })
-                                .then (function() {
-                                    window.location.href = jQuery("#redirect-login-success").val();
-                                });
-
-                        } else {
-
-                            Swal.fire({
-                                type: 'error',
-                                title: 'Login Gagal!',
-                                text: 'silahkan coba lagi!'
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Login Berhasil!',
+                            text: 'Anda akan di arahkan ke halaman dashboard',
+                            timer: 3000,
+                            showCancelButton: false,
+                            showConfirmButton: false
+                        })
+                            .then (function() {
+                                window.location.href = jQuery("#redirect-login-success").val();
                             });
 
-                        }
-
-                    },
-
-                    error:function(response){
+                    } else {
 
                         Swal.fire({
                             type: 'error',
-                            title: 'Opps!',
-                            text: 'server error!'
+                            title: 'Login Gagal!',
+                            text: 'silahkan coba lagi!'
                         });
 
                     }
 
-                });
+                },
+                error:function(response){
 
-            }
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Opps!',
+                        text: 'server error!'
+                    });
 
-        });
+                }
+            });
+        }
 	}
 
 	if ( jQuery(".organisasi").length > 0 ) {
